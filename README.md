@@ -136,9 +136,9 @@ reemplazarla por el modelo de ML entrenado sin tocar el resto de la API.
 
 | Integrante | Rol | GitHub |
 |------------|-----|--------|
-| _[Josue Chan]_ | Datos y modelo (limpieza, análisis, scoring) | _[@Josch108]_ |
+| _[Joel Perez]_ | Datos y modelo (limpieza, análisis, scoring) | _[JOELPEREZ119]_ |
 | _[Josue Chan]_ | Backend y API (FastAPI, base de datos) | _[@Josch108]_ |
-| _[Joel Perez]_ | Frontend / App y documentación | _[@usuario]_ |
+| _[Joel Perez]_ | Frontend / App y documentación | _[JOELPEREZ119]_ |
 
 
 ### Cómo agregar tu commit
