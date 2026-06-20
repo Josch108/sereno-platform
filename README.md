@@ -140,18 +140,6 @@ reemplazarla por el modelo de ML entrenado sin tocar el resto de la API.
 | _[Josue Chan]_ | Backend y API (FastAPI, base de datos) | _[@Josch108]_ |
 | _[Joel Perez]_ | Frontend / App y documentación | _[JOELPEREZ119]_ |
 
-
-### Cómo agregar tu commit
-
-```bash
-git clone <URL-del-repo>
-cd sereno-platform
-# haz un cambio pequeño (p. ej. tu nombre en la tabla de arriba)
-git add README.md
-git commit -m "docs: agrega a <tu nombre> al equipo"
-git push
-```
-
 ---
 
 ## 🔄 Despliegue (GitHub Actions)
