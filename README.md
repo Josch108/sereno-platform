@@ -136,11 +136,10 @@ reemplazarla por el modelo de ML entrenado sin tocar el resto de la API.
 
 | Integrante | Rol | GitHub |
 |------------|-----|--------|
-| _[completar nombre]_ | Datos y modelo (limpieza, análisis, scoring) | _[@usuario]_ |
-| _[completar nombre]_ | Backend y API (FastAPI, base de datos) | _[@usuario]_ |
-| _[completar nombre]_ | Frontend / App y documentación | _[@usuario]_ |
+| _[Josue Chan]_ | Datos y modelo (limpieza, análisis, scoring) | _[@Josch108]_ |
+| _[Josue Chan]_ | Backend y API (FastAPI, base de datos) | _[@Josch108]_ |
+| _[Joel Perez]_ | Frontend / App y documentación | _[@usuario]_ |
 
-> Cada integrante hace su propio commit desde su cuenta (ver más abajo).
 
 ### Cómo agregar tu commit
 
