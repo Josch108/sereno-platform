@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# Entorno
+.env
+*.local
+
+# Base de datos local
+*.db
+*.sqlite3
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+
+# Herramienta interna de notas (no forma parte del proyecto)
+.remember/
+.claude/

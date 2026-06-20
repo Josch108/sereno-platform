@@ -1,0 +1,40 @@
+name: CI · Sereno
+
+# El profesor revisa, aprueba y despliega el esqueleto desde aquí.
+# Este flujo valida que el esqueleto arranque y pase las pruebas antes de desplegar.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generar datos de ejemplo
+        run: python scripts/generate_data.py --n 100
+
+      - name: Ejecutar pruebas
+        run: pytest -q
+
+      - name: Verificar que la API arranca (health check)
+        run: |
+          uvicorn api.main:app --host 127.0.0.1 --port 8000 &
+          sleep 5
+          curl --fail http://127.0.0.1:8000/health
