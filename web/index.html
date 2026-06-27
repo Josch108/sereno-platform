@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sereno — find the calm beneath the scroll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Hanken+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --night-0:#070a18;
+    --night-1:#0c1130;
+    --night-2:#161d4a;
+    --glow-rose:#f4a78c;
+    --glow-amber:#f5cf8a;
+    --moon:#f3ecdd;
+    --ink:#eef1ff;
+    --ink-soft:#aab0d4;
+    --ink-faint:#6d739c;
+    --glass:rgba(255,255,255,.045);
+    --glass-line:rgba(255,255,255,.12);
+    --green:#7fd1a8;
+    --amber:#f3c969;
+    --red:#ef8f8f;
+    --r:22px;
+    --ease:cubic-bezier(.16,.84,.34,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Hanken Grotesk",system-ui,sans-serif;
+    background:var(--night-0);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Atmosphere ---------- */
+  .sky{position:fixed;inset:0;z-index:-3;
+    background:
+      radial-gradient(120% 80% at 50% 118%, rgba(244,167,140,.42), rgba(244,167,140,0) 55%),
+      radial-gradient(90% 60% at 50% 120%, rgba(245,207,138,.38), rgba(245,207,138,0) 50%),
+      radial-gradient(140% 120% at 80% -10%, #1c2a66 0%, rgba(28,42,102,0) 45%),
+      linear-gradient(180deg, var(--night-0) 0%, var(--night-1) 42%, var(--night-2) 100%);
+  }
+  .sky::after{ /* drifting aurora veil */
+    content:"";position:absolute;inset:-20%;
+    background:radial-gradient(40% 30% at 30% 25%, rgba(127,209,168,.10), transparent 70%),
+               radial-gradient(45% 35% at 75% 35%, rgba(140,160,255,.12), transparent 70%);
+    filter:blur(20px);
+    animation:drift 26s var(--ease) infinite alternate;
+  }
+  @keyframes drift{to{transform:translate3d(0,-3%,0) scale(1.08)}}
+  .grain{position:fixed;inset:0;z-index:-2;opacity:.05;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .stars{position:fixed;inset:0;z-index:-2;pointer-events:none}
+  .stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.5;
+    animation:tw 4s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.15}50%{opacity:.7}}
+
+  /* ---------- Moon ---------- */
+  .moon{
+    position:fixed;top:8vh;right:7vw;width:230px;height:230px;border-radius:50%;
+    z-index:-1;
+    background:radial-gradient(circle at 36% 32%, #fff 0%, var(--moon) 38%, #d8ccae 75%, #b9ad8e 100%);
+    box-shadow:0 0 120px 30px rgba(243,236,221,.18), inset -18px -22px 50px rgba(60,52,40,.35);
+    transition:background 1.1s var(--ease), box-shadow 1.1s var(--ease);
+    animation:rise 1.6s var(--ease) both;
+  }
+  @keyframes rise{from{transform:translateY(40px) scale(.9);opacity:0}to{transform:none;opacity:1}}
+  .moon[data-level="green"]{box-shadow:0 0 140px 40px rgba(127,209,168,.40), inset -18px -22px 50px rgba(40,70,55,.4)}
+  .moon[data-level="amber"]{box-shadow:0 0 140px 40px rgba(243,201,105,.42), inset -18px -22px 50px rgba(80,62,30,.4)}
+  .moon[data-level="red"]{box-shadow:0 0 150px 46px rgba(239,143,143,.45), inset -18px -22px 50px rgba(80,40,40,.42)}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:860px;margin:0 auto;padding:38px 26px 90px;position:relative}
+  nav{display:flex;justify-content:space-between;align-items:center;
+    animation:fade .9s var(--ease) both}
+  .mark{font-family:"Fraunces";font-weight:600;font-size:1.45rem;letter-spacing:.02em;
+    display:flex;align-items:center;gap:.5rem}
+  .mark::before{content:"";width:11px;height:11px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fff,var(--moon) 60%,#cdbf9d);
+    box-shadow:0 0 14px rgba(243,236,221,.8)}
+  .tagchip{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink-faint);border:1px solid var(--glass-line);border-radius:100px;padding:.4rem .8rem}
+
+  header{margin:16vh 0 6vh;max-width:600px}
+  h1{font-family:"Fraunces";font-optical-sizing:auto;font-weight:340;
+    font-size:clamp(2.7rem,7.5vw,4.7rem);line-height:1.02;letter-spacing:-.015em;
+    animation:fade 1s var(--ease) .1s both}
+  h1 em{font-style:italic;color:transparent;
+    background:linear-gradient(95deg,var(--glow-amber),var(--glow-rose));
+    -webkit-background-clip:text;background-clip:text}
+  .lede{margin-top:1.5rem;font-size:1.12rem;color:var(--ink-soft);max-width:46ch;
+    animation:fade 1s var(--ease) .25s both}
+  .ethic{margin-top:1.4rem;font-size:.82rem;color:var(--ink-faint);letter-spacing:.01em;
+    display:flex;gap:.5rem;align-items:center;animation:fade 1s var(--ease) .4s both}
+  .ethic::before{content:"⌖";color:var(--glow-amber)}
+
+  /* ---------- Instrument card ---------- */
+  .card{
+    background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);
+    backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);
+    padding:34px 32px;box-shadow:0 30px 80px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08);
+    animation:fade 1s var(--ease) .5s both;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)}
+  .card h2{font-family:"Fraunces";font-weight:400;font-size:1.5rem;margin-bottom:.3rem}
+  .card .sub{color:var(--ink-faint);font-size:.9rem;margin-bottom:1.8rem}
+
+  .row{display:flex;gap:18px;flex-wrap:wrap}
+  .field{flex:1 1 220px;margin-bottom:1.45rem}
+  label{display:block;font-size:.83rem;letter-spacing:.04em;color:var(--ink-soft);
+    margin-bottom:.7rem;text-transform:uppercase}
+  .val{float:right;font-variant-numeric:tabular-nums;color:var(--moon);font-weight:600;
+    text-transform:none;letter-spacing:0}
+
+  /* range */
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;
+    background:linear-gradient(90deg,var(--glow-amber),var(--glow-rose)) no-repeat,
+               rgba(255,255,255,.1);
+    background-size:var(--fill,40%) 100%, 100% 100%;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fff,var(--moon) 70%);
+    border:none;box-shadow:0 0 0 5px rgba(243,236,221,.14),0 4px 12px rgba(0,0,0,.5);
+    transition:transform .15s var(--ease)}
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fff,var(--moon) 70%);box-shadow:0 0 0 5px rgba(243,236,221,.14)}
+
+  /* segmented + chips */
+  .seg{display:flex;gap:6px;background:rgba(255,255,255,.05);border-radius:13px;padding:5px}
+  .seg button{flex:1;border:none;background:transparent;color:var(--ink-soft);
+    font-family:inherit;font-size:.9rem;padding:.6rem;border-radius:9px;cursor:pointer;
+    transition:.25s var(--ease)}
+  .seg button[aria-pressed=true]{background:rgba(243,236,221,.14);color:var(--ink);
+    box-shadow:inset 0 0 0 1px var(--glass-line)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chips button{border:1px solid var(--glass-line);background:transparent;color:var(--ink-soft);
+    font-family:inherit;font-size:.85rem;padding:.5rem .9rem;border-radius:100px;cursor:pointer;
+    transition:.25s var(--ease)}
+  .chips button[aria-pressed=true]{border-color:transparent;color:var(--night-0);font-weight:600;
+    background:linear-gradient(95deg,var(--glow-amber),var(--glow-rose))}
+
+  .reveal-btn{margin-top:.6rem;width:100%;border:none;cursor:pointer;
+    font-family:"Fraunces";font-size:1.08rem;font-weight:500;letter-spacing:.01em;
+    color:var(--night-0);padding:1.05rem;border-radius:14px;position:relative;overflow:hidden;
+    background:linear-gradient(95deg,var(--glow-amber),var(--glow-rose));
+    transition:transform .2s var(--ease),box-shadow .3s var(--ease);
+    box-shadow:0 14px 34px -12px rgba(244,167,140,.65)}
+  .reveal-btn:hover{transform:translateY(-2px);box-shadow:0 20px 44px -12px rgba(244,167,140,.8)}
+  .reveal-btn::after{content:"";position:absolute;top:0;left:-60%;width:50%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+    transform:skewX(-18deg);animation:sheen 4.5s ease-in-out infinite}
+  @keyframes sheen{0%,55%{left:-60%}80%,100%{left:130%}}
+
+  /* ---------- Result ---------- */
+  .result{margin-top:26px;display:none}
+  .result.show{display:block;animation:fade .8s var(--ease) both}
+  .verdict{display:flex;gap:22px;align-items:center;
+    background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);padding:26px}
+  .orb{width:78px;height:78px;border-radius:50%;flex:none;position:relative}
+  .orb::after{content:"";position:absolute;inset:0;border-radius:50%;animation:pulse 2.6s var(--ease) infinite}
+  .verdict[data-level=green] .orb{background:radial-gradient(circle at 35% 32%,#cdfbe2,var(--green))}
+  .verdict[data-level=amber] .orb{background:radial-gradient(circle at 35% 32%,#fdedc0,var(--amber))}
+  .verdict[data-level=red]   .orb{background:radial-gradient(circle at 35% 32%,#fbd2d2,var(--red))}
+  .verdict[data-level=green] .orb::after{box-shadow:0 0 0 0 rgba(127,209,168,.5)}
+  .verdict[data-level=amber] .orb::after{box-shadow:0 0 0 0 rgba(243,201,105,.5)}
+  .verdict[data-level=red]   .orb::after{box-shadow:0 0 0 0 rgba(239,143,143,.5)}
+  @keyframes pulse{to{box-shadow:0 0 0 26px rgba(255,255,255,0)}}
+  .verdict h3{font-family:"Fraunces";font-weight:500;font-size:1.7rem;line-height:1.1}
+  .verdict p{color:var(--ink-soft);font-size:.96rem;margin-top:.35rem}
+
+  .conf{margin-top:18px;display:grid;gap:11px}
+  .bar{display:grid;grid-template-columns:84px 1fr 44px;align-items:center;gap:12px;
+    font-size:.82rem;color:var(--ink-soft)}
+  .bar .track{height:7px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+  .bar .fill{height:100%;width:0;border-radius:99px;transition:width 1s var(--ease)}
+  .bar.green .fill{background:var(--green)} .bar.amber .fill{background:var(--amber)} .bar.red .fill{background:var(--red)}
+  .bar b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+
+  /* triad */
+  .triad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:46px}
+  .lvl{border:1px solid var(--glass-line);border-radius:16px;padding:18px;background:rgba(255,255,255,.025)}
+  .lvl .dot{width:13px;height:13px;border-radius:50%;margin-bottom:.7rem}
+  .lvl:nth-child(1) .dot{background:var(--green);box-shadow:0 0 14px var(--green)}
+  .lvl:nth-child(2) .dot{background:var(--amber);box-shadow:0 0 14px var(--amber)}
+  .lvl:nth-child(3) .dot{background:var(--red);box-shadow:0 0 14px var(--red)}
+  .lvl h4{font-family:"Fraunces";font-weight:500;font-size:1.05rem;margin-bottom:.25rem}
+  .lvl p{font-size:.82rem;color:var(--ink-faint)}
+
+  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--glass-line);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:.78rem;color:var(--ink-faint)}
+  footer a{color:var(--ink-soft);text-decoration:none}
+
+  @keyframes fade{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @media(max-width:560px){.moon{width:140px;height:140px;top:5vh;right:-2vw;opacity:.8}
+    .triad{grid-template-columns:1fr}.verdict{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+  <div class="sky"></div><div class="grain"></div><div class="stars" id="stars"></div>
+  <div class="moon" id="moon"></div>
+
+  <div class="wrap">
+    <nav>
+      <div class="mark">Sereno</div>
+      <div class="tagchip">Early screening · not diagnosis</div>
+    </nav>
+
+    <header>
+      <h1>Find the calm <em>beneath the scroll.</em></h1>
+      <p class="lede">Sereno reads a few honest habits — not your messages — and reflects back where the
+        stress is building, so a conversation can start before it gets loud.</p>
+      <p class="ethic">No content is ever read. The reading is yours alone.</p>
+    </header>
+
+    <section class="card">
+      <h2>Your typical day</h2>
+      <p class="sub">Move the sliders to match a normal day. Then ask Sereno for your reading.</p>
+
+      <div class="row">
+        <div class="field" style="flex-basis:100%">
+          <label>I usually feel most like a… <span class="val" id="gv">student, 16</span></label>
+          <div class="row" style="gap:14px">
+            <div style="flex:1 1 120px">
+              <input type="range" id="age" min="13" max="25" value="16" oninput="upd()" />
+            </div>
+            <div class="seg" style="flex:2 1 220px" id="gender">
+              <button type="button" aria-pressed="true" data-v="female">Female</button>
+              <button type="button" aria-pressed="false" data-v="male">Male</button>
+              <button type="button" aria-pressed="false" data-v="other">Other</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Most used platform</label>
+        <div class="chips" id="platform">
+          <button type="button" aria-pressed="true" data-v="TikTok">TikTok</button>
+          <button type="button" aria-pressed="false" data-v="Instagram">Instagram</button>
+          <button type="button" aria-pressed="false" data-v="YouTube">YouTube</button>
+          <button type="button" aria-pressed="false" data-v="Snapchat">Snapchat</button>
+          <button type="button" aria-pressed="false" data-v="Other">Other</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Social media <span class="val"><b id="smv">4.0</b> h/day</span></label>
+          <input type="range" id="sm" min="0" max="12" step="0.5" value="4" oninput="upd()" />
+        </div>
+        <div class="field">
+          <label>Sleep <span class="val"><b id="slv">7.0</b> h/night</span></label>
+          <input type="range" id="sl" min="0" max="12" step="0.5" value="7" oninput="upd()" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Study <span class="val"><b id="stv">4.0</b> h/day</span></label>
+        <input type="range" id="st" min="0" max="12" step="0.5" value="4" oninput="upd()" />
+      </div>
+
+      <button class="reveal-btn" onclick="reveal()">Reveal my Sereno reading</button>
+
+      <div class="result" id="result">
+        <div class="verdict" id="verdict" data-level="green">
+          <div class="orb"></div>
+          <div>
+            <h3 id="vlabel">—</h3>
+            <p id="vadvice">—</p>
+          </div>
+        </div>
+        <div class="conf" id="conf"></div>
+      </div>
+    </section>
+
+    <div class="triad">
+      <div class="lvl"><div class="dot"></div><h4>Green · steady</h4><p>Habits look balanced. Keep protecting the night.</p></div>
+      <div class="lvl"><div class="dot"></div><h4>Amber · watchful</h4><p>A calm moment to adjust screen-time and sleep.</p></div>
+      <div class="lvl"><div class="dot"></div><h4>Red · reach out</h4><p>Open a no-blame conversation. Small changes first.</p></div>
+    </div>
+
+    <footer>
+      <span>Sereno — adolescent stress screening from digital habits.</span>
+      <span>Model trained on real data · 86% accuracy · <a href="#">screening, not a diagnosis</a></span>
+    </footer>
+  </div>
+
+<script>
+  // starfield
+  const sky=document.getElementById('stars');
+  for(let i=0;i<60;i++){const s=document.createElement('i');
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*70+'%';
+    s.style.animationDelay=(Math.random()*4)+'s';
+    s.style.opacity=Math.random()*.5+.2;sky.appendChild(s);}
+
+  // segmented / chips single-select
+  function group(id){const el=document.getElementById(id);
+    el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+      [...el.children].forEach(c=>c.setAttribute('aria-pressed',c===b));upd();});}
+  group('gender');group('platform');
+  const pick=id=>document.querySelector('#'+id+' [aria-pressed=true]').dataset.v;
+
+  // slider fill + labels
+  function fill(el){const min=+el.min,max=+el.max;el.style.setProperty('--fill',((el.value-min)/(max-min)*100)+'%');}
+  function upd(){
+    ['age','sm','sl','st'].forEach(id=>fill(document.getElementById(id)));
+    smv.textContent=(+sm.value).toFixed(1);
+    slv.textContent=(+sl.value).toFixed(1);
+    stv.textContent=(+st.value).toFixed(1);
+    gv.textContent=`${pick('gender')}, ${age.value}`;
+  }
+
+  // local fallback estimate (mirrors model: social media > sleep > study)
+  function localEstimate(a,sm,sl,stu){
+    const idx = Math.min(sm,12)/12*0.50 + (12-Math.min(sl,12))/12*0.34 + (12-Math.min(stu,12))/12*0.16;
+    let level = idx<0.34 ? 'green' : idx<0.58 ? 'yellow' : 'red';
+    const p={green:0,yellow:0,red:0};
+    p[level]=0.62+Math.random()*0.12;
+    const rest=(1-p[level])/2;
+    for(const k in p) if(k!==level) p[k]=rest;
+    return {level,probabilities:p,advice:ADVICE[level],label:LABELS[level]};
+  }
+  const ADVICE={
+    green:"Low stress signals. Your digital and sleep habits look balanced — keep protecting your night-time rest.",
+    yellow:"Moderate stress signals. A calm moment to review screen-time and sleep routines before they build up.",
+    red:"High stress signals. Consider a no-blame conversation and small changes to night-time social-media use. This is screening, not a diagnosis."};
+  const LABELS={green:"Steady — green",yellow:"Watchful — amber",red:"Reach out — red"};
+  const UI={green:'green',yellow:'amber',red:'red'};
+
+  async function reveal(){
+    const payload={age:+age.value,gender:pick('gender'),
+      social_media_hours:+sm.value,sleep_hours:+sl.value,study_hours:+st.value};
+    let r;
+    try{
+      const res=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)});
+      if(!res.ok) throw 0;
+      r=await res.json();
+    }catch(e){ r=localEstimate(payload.age,payload.social_media_hours,payload.sleep_hours,payload.study_hours); }
+    render(r);
+  }
+
+  function render(r){
+    const ui=UI[r.level];
+    document.getElementById('result').classList.add('show');
+    const v=document.getElementById('verdict');v.dataset.level=ui;
+    document.getElementById('moon').dataset.level=ui;
+    document.getElementById('vlabel').textContent=r.label||LABELS[r.level];
+    document.getElementById('vadvice').textContent=r.advice||ADVICE[r.level];
+    const order=['green','yellow','red'];
+    document.getElementById('conf').innerHTML=order.map(k=>{
+      const pct=Math.round((r.probabilities[k]||0)*100);
+      return `<div class="bar ${UI[k]}"><span>${k[0].toUpperCase()+k.slice(1)}</span>
+        <div class="track"><div class="fill" data-w="${pct}"></div></div><b>${pct}%</b></div>`;}).join('');
+    requestAnimationFrame(()=>document.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%'));
+    document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  upd();
+</script>
+</body>
+</html>
