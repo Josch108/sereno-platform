@@ -16,6 +16,11 @@ env/
 *.db
 *.sqlite3
 
+# Datos crudos externos y artefactos generados (se regeneran con los scripts)
+data/raw/
+data/processed/
+model/*.pkl
+
 # Sistema operativo
 .DS_Store
 Thumbs.db
